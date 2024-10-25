@@ -50,7 +50,7 @@ def trajectories(a1, a2, t0, tf):
 	q2 = a2[0] + a2[1]*t + a2[2]*t**2 + a2[3]*t**3
 	q2dot = a2[1] + 2*a2[2]*t + 3*a2[3]*t**2
 
-	return q1, q2, q2dot, q1dot
+	return q1, q2, q1dot, q2dot
 	
 # Plots the position of the end-effector in space over time
 def plot_pos():
