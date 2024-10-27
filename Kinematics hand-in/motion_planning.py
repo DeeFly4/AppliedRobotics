@@ -41,7 +41,7 @@ def cubic_parameters(q0, qf, t0, tf, v0=0, vf=0):
 	
 	return a1, a2
 
-# Plots the cubic trajectory for a given set of cubic parameters, used in plot_traj() and plot_pos()
+# Calculates the cubic trajectory for two given sets of cubic parameters, used in plot_traj and plot_pos
 def trajectories(a1, a2, t0, tf):
 	t = np.linspace(t0, tf)
 
@@ -53,23 +53,21 @@ def trajectories(a1, a2, t0, tf):
 	return q1, q2, q1dot, q2dot
 	
 # Plots the position of the end-effector in space over time
-def plot_pos():
+def plot_pos(targets):
 	q0 = [np.pi/2, 0, 0]
 
 	pos_vec = [[0,4]]
 	
 	for i, pos in enumerate(targets):
-		t = np.linspace(i, i+1, 25)
-
 		qf = inverse_kin(pos)
 
 		a1, a2 = cubic_parameters(q0, qf, i, i+1)
 
-		q0 = qf
-
 		q1, q2, _, _ = trajectories(a1, a2, i, i+1)
 
 		pos_vec = np.vstack((pos_vec, np.array([forward_kin(thetas) for thetas in zip(q1,q2)])))
+
+		q0 = qf
 
 	plt.plot(pos_vec[:, 0], pos_vec[:, 1])
 
@@ -87,7 +85,7 @@ def plot_pos():
 	plt.show()
 
 # Plots the cubic trajectories for all movements, one new window for each movement
-def plot_traj():
+def plot_traj(targets):
 	q0 = [np.pi/2, 0, 0]
 	
 	q1_vec = q2_vec = q1dot_vec = q2dot_vec = []
@@ -133,5 +131,5 @@ def plot_traj():
 	plt.show()
 
 if __name__ == '__main__':
-	plot_pos()
-	plot_traj()
+	plot_pos(targets)
+	plot_traj(targets)
