@@ -42,7 +42,7 @@ def ptraj(q0, qf):
 
 	return q0 + np.array([[speeds[0]*time, speeds[1]*time] for time in t])
 
-def interpolate(start_pos, end_pos, spacing=0.1):
+def interpolate(start_pos, end_pos, spacing=0.5):
 	x = start_pos[0]
 	y = start_pos[1]
 
@@ -56,6 +56,7 @@ def interpolate(start_pos, end_pos, spacing=0.1):
 	y_step = y_diff / n_steps
 	
 	thetas = np.empty((n_steps+1, 2), dtype=float)
+	coords = np.array([x, y])
 	
 	for i in range(n_steps):
 		try:
@@ -67,13 +68,15 @@ def interpolate(start_pos, end_pos, spacing=0.1):
 
 		x += x_step
 		y += y_step
+
+		coords = np.vstack((coords, [x, y]))
 	
 	thetas[-1] = inv_kin(end_pos)
 
-	return thetas
+	return coords, thetas
 
 def linear_traj(start, end):
-	theta_targets = interpolate(start, end)
+	coords, theta_targets = interpolate(start, end)
  
 	theta1 = theta2 = []
 	
@@ -86,15 +89,16 @@ def linear_traj(start, end):
 		theta1 = np.append(theta1, traj[:, 0])
 		theta2 = np.append(theta2, traj[:, 1])
 
-	return np.array([theta1, theta2]).T	
+	return coords, np.array([theta1, theta2]).T	
 
 if __name__ == '__main__':
-	thetas = linear_traj(start, end)
+	coords, thetas = linear_traj(start, end)
 
 	T_list = robot.fkine(thetas)
 
 	pos = np.array([[T.t[0], T.t[1]] for T in T_list])
 
+	plt.plot(coords[:, 0], coords[:, 1], '.')
 	plt.plot(pos[:, 0], pos[:, 1])
 	plt.show()
 
